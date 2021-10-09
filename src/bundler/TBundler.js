@@ -22,7 +22,7 @@ class TBundler {
  */
 function getJSON (url) {
   return new Promise((res, rej) => {
-    fetch(url).then(res => res.json()).then(data => {
+    fetch(url, { mode: 'no-cors' }).then(res => res.json()).then(data => {
       res(data)
     }).catch(err => rej(err))
   })
