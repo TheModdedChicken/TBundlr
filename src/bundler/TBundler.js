@@ -1,14 +1,6 @@
 class TBundler {
-
-  /**
-   * 
-   * @param {{
-   *  repos?: string
-   * }} options 
-   */
-  constructor (options) {
-    //this.repos = options.repos
-  }
+  constructor () {}
+  test () {console.log("You successfully tested the TBundler module! Your mother would be proud :D")}
 
   /**
    * 
