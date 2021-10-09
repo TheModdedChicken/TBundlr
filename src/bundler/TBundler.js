@@ -1,6 +1,7 @@
 class TBundler {
   constructor () {
-    this.CDN = 'https://combinatronics.com'
+    this.CDN_JS = 'https://combinatronics.com'
+    this.CDN_TEXT = 'https://raw.githubusercontent.com'
   }
   test () {console.log('You successfully tested the TBundler module! Your mother would be proud :D')}
 
@@ -10,7 +11,7 @@ class TBundler {
    * @param {string?} repo
    */
   loadProgram (id, repo) {
-    getJSON(this.CDN + repo + '/tb-config.json', (err, data) => {
+    getJSON(this.CDN_TEXT + repo + '/tb-config.json', (err, data) => {
       console.log(err || data)
     })
   }
