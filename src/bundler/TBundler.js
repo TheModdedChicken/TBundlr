@@ -1,5 +1,4 @@
 class TBundler {
-  CDN = 'https://cdn.jsdelivr.net';
   programs = {};
 
   constructor () {}
@@ -27,10 +26,11 @@ class TBundler {
    * }} options
    */
   fetchProgram (url, options) {
-    getJSON(formatCdnUrl(url) + '/tb-config.json', (err, data) => {
+    getJSON(url + '/tb-config.json', (err, data) => {
       if (err) throw err;
 
       var program = data;
+      program.url = url;
       const id = this.programs[program.id] ? program.id + `_${new Date().getTime()}` : program.id;
 
       if (options.run) this.run(program);
@@ -49,36 +49,6 @@ class TBundler {
 }
 
 /* Functions */
-
-/**
- * 
- * @param {string} url 
- */
-function formatCdnUrl(url) {
-  var urlParts = url.replace(/(https:\/\/)|(http:\/\/)/gi, '').replace(/\/+|\\+/g, '/').split('/');
-  var urlOut = this.CDN;
-  var foundBranch = false;
-  var foundQuery = false;
-
-  for (var i = 0; i < urlParts; i++) {
-    const part = urlParts[i];
-
-    if (part.match(/(raw.githubusercontent.com)|(github.com)/g)) urlOut += 'gh'
-    else if (i === 3 && part !== 'blob' && part !== 'blame') {
-      urlOut += '@' + part;
-      foundBranch = true;
-    }
-    else if (i === 4 && !foundBranch) {
-      urlOut += '@' + part;
-      foundBranch = true;
-    }
-    else if (foundQuery || part.startsWith('?') || part.startsWith('#')) {
-      urlOut += part
-      foundQuery = true;
-    }
-    else urlOut += '/' + part;
-  }
-}
 
 /**
  * Yoinked from https://stackoverflow.com/a/35970894/14618276 on Oct 9 2021
