@@ -1,5 +1,5 @@
 {
-  "$schema": "../../program-schema.json",
+  "$schema": "https://raw.githubusercontent.com/TheModdedChicken/tumble-bundler/main/src/program-schema.json",
   "bundler_version": 0,
   "id": "hyperpop-pong",
   "author": "TheModdedChicken",
