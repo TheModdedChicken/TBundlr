@@ -10,7 +10,7 @@ class TBundler {
    * @param {string?} repo
    */
   loadProgram (id, repo) {
-    import(CDN + repo + id + '/tb-config.json').then(data => {
+    import(this.CDN + repo + id + '/tb-config.json').then(data => {
       console.log(data)
     })
   }
