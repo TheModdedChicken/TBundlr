@@ -7,14 +7,18 @@ class TBundler {
   /**
    * Run a loaded/cached program
    * @param {string | object} program String ID of program or object with program data
+   * @param { HTMLElement } element Element to append program to
    */
-  run (program) {
+  run (program, element) {
     var programData = {};
 
     if (typeof program === 'string') programData = this.programs[program];
     if (typeof program === 'object') programData = program;
 
+    const mainHTML = new URL(programData.main, programData.url);
+
     console.log(programData)
+    console.log(mainHTML)
   }
 
   /**

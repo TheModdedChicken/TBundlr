@@ -42,6 +42,10 @@
       "description": "Author of your program",
       "minLength": 2,
       "maxLength": 30
+    },
+    "main": {
+      "type": "string",
+      "description": "Main html file of program"
     }
   },
   "required": [ "bundler_version", "id" ]
