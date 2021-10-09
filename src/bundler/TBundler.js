@@ -21,5 +21,3 @@ class TBundler {
     })
   }
 }
-
-export default TBundler
