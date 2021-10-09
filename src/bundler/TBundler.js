@@ -10,7 +10,9 @@ class TBundler {
    * @param {string?} repo
    */
   loadProgram (id, repo) {
-    getJSON(this.CDN + repo + '/tb-config.json').then(data => console.log(data))
+    getJSON(this.CDN + repo + '/tb-config.json', (err, data) => {
+      console.log(err || data)
+    })
   }
 }
 
@@ -19,12 +21,10 @@ class TBundler {
 /**
  * Yoinked from https://stackoverflow.com/a/35970894/14618276 on Oct 9 2021
  * @param {string} url 
+ * @param {(err: Error, data: object)} callback
  */
-function getJSON (url) {
-  return new Promise((res, rej) => {
-    fetch(url, { mode: 'no-cors' }).then(async data => {
-      console.log(data)
-      //res(await data.json())
-    }).catch(err => rej(err))
-  })
+function getJSON (url, callback) {
+  fetch(url).then(res => res.json()).then(data => {
+    callback(null, data)
+  }).catch(err => callback(err, null))
 }
