@@ -1,0 +1,7 @@
+{
+  "$schema": "../../program-schema.json",
+  "bundler_version": 0,
+  "id": "hyperpop-pong",
+  "author": "TheModdedChicken",
+  "description": "First proof of concept game for tumble-bundler"
+}

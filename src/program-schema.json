@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "TB-Program",
+  "description": "Tumblr Bundler Program",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "bundler_version": {
+      "description": "Tells the bundler what bundler/schema version you're using",
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      ]
+    },
+    "id": {
+      "type": "string",
+      "description": "Used to uniquely identify your program",
+      "minLength": 3,
+      "maxLength": 50
+    },
+    "name": {
+      "type": "string",
+      "description": "Used as your program's display name",
+      "minLength": 3
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of your program"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author of your program",
+      "minLength": 2,
+      "maxLength": 30
+    }
+  },
+  "required": [ "bundler_version", "id" ]
+}
