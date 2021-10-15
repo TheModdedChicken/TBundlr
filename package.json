@@ -10,6 +10,6 @@
     "serve": "^12.0.1"
   },
   "scripts": {
-    "start": "serve"
+    "start": "serve ./src -C"
   }
 }
