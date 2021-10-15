@@ -15,7 +15,7 @@ class TBundler {
     if (typeof program === 'string') programData = this.programs[program];
     if (typeof program === 'object') programData = program;
 
-    const mainHTML = new URL(programData.main, programData.url);
+    const mainHTML = new URL(programData.main, programData.url).href;
 
     console.log(programData)
     console.log(mainHTML)

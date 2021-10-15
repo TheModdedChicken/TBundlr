@@ -1,0 +1,15 @@
+{
+  "name": "tumble-bundler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/TheModdedChicken/tumble-bundler.git",
+  "author": "Logan Shaw <loganshaw1744@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "serve": "^12.0.1"
+  },
+  "scripts": {
+    "start": "serve"
+  }
+}

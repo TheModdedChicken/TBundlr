@@ -4,5 +4,5 @@
   "id": "hyperpop-pong",
   "author": "TheModdedChicken",
   "description": "First proof of concept game for tumble-bundler",
-  "main": "index.html"
+  "main": "./index.html"
 }
