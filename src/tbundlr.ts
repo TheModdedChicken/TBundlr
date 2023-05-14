@@ -50,14 +50,14 @@ class TBundlr {
     element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
     element.setAttribute('src', `${url.href}`);
 
-    if (!isJS && options?.interop) {
-      window.addEventListener("message", (e) => {
-        console.log(e.data)
-      })
-    }
-
     if (options?.parent) element = options?.parent.appendChild(element);
     else element = document.body.appendChild(element);
+
+    if (!isJS && options?.interop) {
+      (element as HTMLIFrameElement).contentWindow?.addEventListener("message", (e) => {
+        console.log(e.data)
+      });
+    }
 
     const pid = new Date().getTime();
     const meta: ITBProgram = {
@@ -71,6 +71,8 @@ class TBundlr {
     window.dispatchEvent(new CustomEvent(
       'tbundlr:-:execute', { detail: { pid: `${pid}`, config } }
     ));
+
+    console.log((element as HTMLIFrameElement).contentWindow)
   }
 }
 

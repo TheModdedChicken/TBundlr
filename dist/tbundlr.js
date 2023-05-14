@@ -58,15 +58,16 @@ var tbundlr = (() => {
                     element = options === null || options === void 0 ? void 0 : options.parent.appendChild(element);
                 else
                     element = document.body.appendChild(element);
+                if (!isJS && (options === null || options === void 0 ? void 0 : options.interop)) {
+                    (_a = element.contentWindow) === null || _a === void 0 ? void 0 : _a.addEventListener("message", (e) => {
+                        console.log(e.data);
+                    });
+                }
                 const pid = new Date().getTime();
                 const meta = Object.assign({ type: isJS ? 'js' : 'html', element }, config);
                 this._programs.set(`${pid}`, meta);
                 window.dispatchEvent(new CustomEvent('tbundlr:-:execute', { detail: { pid: `${pid}`, config } }));
-                if (!isJS && (options === null || options === void 0 ? void 0 : options.interop)) {
-                    (_a = element.contentWindow) === null || _a === void 0 ? void 0 : _a.addEventListener("tbundlr_run:-:execute", (e) => {
-                        console.log("testingdf sfgdg");
-                    });
-                }
+                console.log(element.contentWindow);
             }
         }
         exports.TBundlr = TBundlr;
