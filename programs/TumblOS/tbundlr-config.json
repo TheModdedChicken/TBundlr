@@ -5,5 +5,5 @@
   "author": "TheModdedChicken",
   "description": "A simple, console-based fantasy OS for Tumblr.",
   "id": "tumbl-os",
-  "main": "index.js"
+  "main": "index.html"
 }

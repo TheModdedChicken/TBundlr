@@ -1,9 +1,3 @@
-//import { Snowflake } from 'nodejs-snowflake';
-
-function TBunTest () {
-  console.log("TBunTest")
-}
-
 class TBundlr {
   private _programs: Map<string, ITBProgram> = new Map()
 
@@ -19,18 +13,24 @@ class TBundlr {
     );
 
     const config: ITBConfig = await res.json();
-    /*if (!config.$tbundlr_version) throw new Error(
+    if (!config.$tbundlr_version) throw new Error(
       `[tbundlr:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr_version' not set. Config read aborted`
-    );*/
+    );
 
     return config;
   }
 
-  async runProgram(url: URL, options?: { parent?: HTMLElement }) {
+  async runProgram(
+    url: URL, 
+    options?: { 
+      parent?: HTMLElement, 
+      interop?: boolean 
+    }
+  ) {
     const config: ITBConfig = await this.readConfig(url);
 
     const fileURL = new URL(config.main, url);
-    this.execute(fileURL, config, options?.parent);
+    this.execute(fileURL, config, options);
     window.dispatchEvent(new CustomEvent(
       'tbundlr:-:runProgram', { detail: config }
     ));
@@ -39,15 +39,18 @@ class TBundlr {
   execute (
     url: URL,
     config: ITBConfig,
-    parent?: HTMLElement,
+    options?: {
+      parent?: HTMLElement,
+      interop?: boolean
+    },
   ) {
     const isJS = url.href.endsWith('.js');
 
-    var element = document.createElement(isJS ? 'script' : 'embed');
+    var element = document.createElement(isJS ? 'script' : 'iframe');
     element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
     element.setAttribute('src', `${url.href}`);
 
-    if (parent) element = parent.appendChild(element);
+    if (options?.parent) element = options?.parent.appendChild(element);
     else element = document.body.appendChild(element);
 
     const pid = new Date().getTime();
@@ -62,6 +65,12 @@ class TBundlr {
     window.dispatchEvent(new CustomEvent(
       'tbundlr:-:execute', { detail: { pid: `${pid}`, config } }
     ));
+
+    if (!isJS && options?.interop) {
+      (element as HTMLIFrameElement).contentWindow?.addEventListener("tbundlr_run:-:execute", (e) => {
+        console.log("testingdf sfgdg")
+      })
+    }
   }
 }
 
@@ -83,6 +92,5 @@ interface ITBProgram extends ITBConfig {
 }
 
 export {
-  TBunTest,
   TBundlr
 }

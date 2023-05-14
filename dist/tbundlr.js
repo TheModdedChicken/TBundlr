@@ -18,15 +18,10 @@ var tbundlr = (() => {
             step((generator = generator.apply(thisArg, _arguments || [])).next());
         });
     };
-    //import { Snowflake } from 'nodejs-snowflake';
     define("tbundlr", ["require", "exports"], function (require, exports) {
         "use strict";
         Object.defineProperty(exports, "__esModule", { value: true });
-        exports.TBundlr = exports.TBunTest = void 0;
-        function TBunTest() {
-            console.log("TBunTest");
-        }
-        exports.TBunTest = TBunTest;
+        exports.TBundlr = void 0;
         class TBundlr {
             constructor() {
                 this._programs = new Map();
@@ -40,9 +35,8 @@ var tbundlr = (() => {
                     if (!(contentType === null || contentType === void 0 ? void 0 : contentType.includes("application/json")))
                         throw new Error(`[tbundlr:-:readConfig::content-type-mismatch] Tried reading TB config expecting 'application/json'. Got '${contentType}' instead`);
                     const config = yield res.json();
-                    /*if (!config.$tbundlr_version) throw new Error(
-                      `[tbundlr:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr_version' not set. Config read aborted`
-                    );*/
+                    if (!config.$tbundlr_version)
+                        throw new Error(`[tbundlr:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr_version' not set. Config read aborted`);
                     return config;
                 });
             }
@@ -50,23 +44,29 @@ var tbundlr = (() => {
                 return __awaiter(this, void 0, void 0, function* () {
                     const config = yield this.readConfig(url);
                     const fileURL = new URL(config.main, url);
-                    this.execute(fileURL, config, options === null || options === void 0 ? void 0 : options.parent);
+                    this.execute(fileURL, config, options);
                     window.dispatchEvent(new CustomEvent('tbundlr:-:runProgram', { detail: config }));
                 });
             }
-            execute(url, config, parent) {
+            execute(url, config, options) {
+                var _a;
                 const isJS = url.href.endsWith('.js');
-                var element = document.createElement(isJS ? 'script' : 'embed');
+                var element = document.createElement(isJS ? 'script' : 'iframe');
                 element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
                 element.setAttribute('src', `${url.href}`);
-                if (parent)
-                    element = parent.appendChild(element);
+                if (options === null || options === void 0 ? void 0 : options.parent)
+                    element = options === null || options === void 0 ? void 0 : options.parent.appendChild(element);
                 else
                     element = document.body.appendChild(element);
                 const pid = new Date().getTime();
                 const meta = Object.assign({ type: isJS ? 'js' : 'html', element }, config);
                 this._programs.set(`${pid}`, meta);
                 window.dispatchEvent(new CustomEvent('tbundlr:-:execute', { detail: { pid: `${pid}`, config } }));
+                if (!isJS && (options === null || options === void 0 ? void 0 : options.interop)) {
+                    (_a = element.contentWindow) === null || _a === void 0 ? void 0 : _a.addEventListener("tbundlr_run:-:execute", (e) => {
+                        console.log("testingdf sfgdg");
+                    });
+                }
             }
         }
         exports.TBundlr = TBundlr;

@@ -1,17 +1,15 @@
 {
-  "name": "tumble-bundler",
+  "name": "tbundlr",
   "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/TheModdedChicken/tumble-bundler.git",
-  "author": "Logan Shaw <loganshaw1744@gmail.com>",
+  "main": "./dist/tbundlr.js",
+  "repository": "https://github.com/TheModdedChicken/TBundlr.git",
+  "author": "TheModdedChicken",
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "nodejs-snowflake": "^2.0.1",
     "path-browserify": "^1.0.1",
     "serve": "^14.2.0",
-    "typescript-bundle": "^1.0.18",
-    "util": "^0.12.5"
+    "typescript-bundle": "^1.0.18"
   },
   "scripts": {
     "start": "serve ./src -C",
