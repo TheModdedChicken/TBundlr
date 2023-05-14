@@ -7,7 +7,6 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "path-browserify": "^1.0.1",
     "serve": "^14.2.0",
     "typescript-bundle": "^1.0.18"
   },
@@ -17,11 +16,6 @@
   },
   "devDependencies": {
     "ts-loader": "^9.4.2",
-    "typescript": "^5.0.4",
-    "webpack": "^5.82.1",
-    "webpack-cli": "^5.1.1"
-  },
-  "browser": {
-    "path": "path-browserify"
+    "typescript": "^5.0.4"
   }
 }

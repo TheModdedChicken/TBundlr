@@ -6,6 +6,8 @@ class TBundlr {
       const data: ITBInteropData = e.data;
       const cmd = data.cmd;
 
+      // TO-DO: Add interop restrictions to only allow valid PIDs to make requests
+
       if (cmd in InteropCommands) InteropCommands[cmd](data, this);
     });
   }
@@ -97,7 +99,9 @@ function parseTTScript (script: string) {
   trustedTypes.createPolicy("ppjs", { createScript: (string: string) => string }).createScript(script) : script
 }
 
-const InteropCommands: { [x in keyof any]: (data: ITBInteropData, bundler: TBundlr) => void } = {
+const InteropCommands: { 
+  [x in keyof any]: (data: ITBInteropData, bundler: TBundlr) => void 
+} = {
   "tbundlr_cmd:-:test": (data, bundler: TBundlr) => {
     bundler.emitProgramEvent("tbundlr_event:-:test", true, data.pid)
   },
