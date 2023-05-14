@@ -8,7 +8,7 @@
     "$schema": {
       "type": "string"
     },
-    "bundler_version": {
+    "$tbundlr_version": {
       "description": "Tells the bundler what bundler/schema version you're using",
       "anyOf": [
         {
@@ -46,7 +46,18 @@
     "main": {
       "type": "string",
       "description": "Main html file of program"
+    },
+    "window": {
+      "type": "object",
+      "properties": {
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      }
     }
   },
-  "required": [ "bundler_version", "id" ]
+  "required": [ "$tbundlr_version", "id" ]
 }

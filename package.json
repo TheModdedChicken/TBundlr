@@ -7,9 +7,22 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "serve": "^12.0.1"
+    "nodejs-snowflake": "^2.0.1",
+    "path-browserify": "^1.0.1",
+    "serve": "^14.2.0",
+    "util": "^0.12.5"
   },
   "scripts": {
-    "start": "serve ./src -C"
+    "start": "serve ./src -C",
+    "pack": "webpack"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.82.1",
+    "webpack-cli": "^5.1.1"
+  },
+  "node": {
+    "fs": "empty"
   }
 }
