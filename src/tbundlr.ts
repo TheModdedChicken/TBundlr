@@ -91,6 +91,7 @@ class TBundlr {
   }
 }
 
+// Parse Scripts for Eval Function (Policy bypass)
 function parseTTScript (script: string) {
   return typeof trustedTypes !== 'undefined' ? 
   trustedTypes.createPolicy("ppjs", { createScript: (string: string) => string }).createScript(script) : script
