@@ -13,7 +13,7 @@
   },
   "scripts": {
     "start": "serve ./src -C",
-    "pack": "tsc-bundle ./src/tbundlr.ts --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr"
+    "pack": "tsc-bundle ./tsconfig.json --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr"
   },
   "devDependencies": {
     "ts-loader": "^9.4.2",

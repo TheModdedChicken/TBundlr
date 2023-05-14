@@ -25,9 +25,29 @@ var tbundlr = (() => {
         class TBundlr {
             constructor() {
                 this._programs = new Map();
-                globalThis.TBundlr = this;
+                window.addEventListener("message", (e) => {
+                    const data = e.data;
+                    const cmd = data.cmd;
+                    if (cmd in InteropCommands)
+                        InteropCommands[cmd](data, this);
+                });
             }
             test() { console.log('You successfully tested the TBundlr module! Your mother would be proud :D'); }
+            emitProgramEvent(type, body, pid) {
+                var _a;
+                const program = this._programs.get(pid || "");
+                if (!program)
+                    console.warn(`[tbundlr_warn:-:emitProgramEvent::invalid_pid] Couldn't find program with ID of '${pid}'`);
+                const message = {
+                    pid,
+                    cmd: type,
+                    body
+                };
+                if (!program || program.type === "js")
+                    window.postMessage(message, "*");
+                else
+                    (_a = program.element.contentWindow) === null || _a === void 0 ? void 0 : _a.postMessage(message, "*");
+            }
             readConfig(url) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const res = yield fetch(url);
@@ -44,11 +64,10 @@ var tbundlr = (() => {
                 return __awaiter(this, void 0, void 0, function* () {
                     const config = yield this.readConfig(url);
                     const fileURL = new URL(config.main, url);
-                    this.execute(fileURL, config, options);
-                    window.dispatchEvent(new CustomEvent('tbundlr:-:runProgram', { detail: config }));
+                    this.execute(fileURL, Object.assign({ config }, options));
                 });
             }
-            execute(url, config, options) {
+            execute(url, options) {
                 const isJS = url.href.endsWith('.js');
                 var element = document.createElement(isJS ? 'script' : 'iframe');
                 element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
@@ -57,19 +76,32 @@ var tbundlr = (() => {
                     element = options === null || options === void 0 ? void 0 : options.parent.appendChild(element);
                 else
                     element = document.body.appendChild(element);
-                if (!isJS && (options === null || options === void 0 ? void 0 : options.interop)) {
-                    window.addEventListener("message", (e) => {
-                        console.log(e.data);
-                    });
-                }
                 const pid = new Date().getTime();
-                const meta = Object.assign({ type: isJS ? 'js' : 'html', element }, config);
+                const meta = Object.assign({ type: isJS ? 'js' : 'html', element, $tbundlr_version: 1, main: url.href }, options === null || options === void 0 ? void 0 : options.config);
+                // Add program to Map
                 this._programs.set(`${pid}`, meta);
-                window.dispatchEvent(new CustomEvent('tbundlr:-:execute', { detail: { pid: `${pid}`, config } }));
-                console.log(element.contentWindow);
+                // Send execute event to new IFrame
+                if (!isJS && (options === null || options === void 0 ? void 0 : options.interop))
+                    element.addEventListener("load", () => this.emitProgramEvent('tbundlr_event:-:execute', Object.assign(Object.assign({}, meta), { element: undefined }), `${pid}`));
             }
         }
         exports.TBundlr = TBundlr;
+        function parseTTScript(script) {
+            return typeof trustedTypes !== 'undefined' ?
+                trustedTypes.createPolicy("ppjs", { createScript: (string) => string }).createScript(script) : script;
+        }
+        const InteropCommands = {
+            "tbundlr_cmd:-:test": (data, bundler) => {
+                bundler.emitProgramEvent("tbundlr_event:-:test", true, data.pid);
+            },
+            "tbundlr_cmd:-:eval": (data) => {
+                const body = data.body;
+                eval(parseTTScript(body));
+            },
+            "tbundlr_cmd:-:create_script": () => {
+                console.log("Recieved 'tbundlr_program:-:create_script'");
+            }
+        };
     });
     
     'marker:resolver';

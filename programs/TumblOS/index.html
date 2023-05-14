@@ -7,11 +7,27 @@
   <title>Document</title>
 </head>
 <body>
-  <button onclick="doIt()">Do It</button>
+  <button id="testing" onclick="doIt()">Do It</button>
 </body>
 </html>
 <script>
+  var pid = "";
+
+  window.addEventListener("message", (e) => {
+    if (InteropEvents[e.data.cmd]) InteropEvents[e.data.cmd](e.data);
+  })
+
   function doIt() {
-    parent.postMessage("tbundlr_program:-:execute");
+    parent.postMessage({ pid, cmd: "tbundlr_cmd:-:eval", body: "console.log('test-eval')" }, "*");
+  }
+
+  const InteropEvents = {
+    "tbundlr_event:-:execute": (data) => {
+      pid = data.pid;
+      console.log(data)
+    },
+    "tbundlr_event:-:test": () => {
+      console.log("tbundlr_cmd:-:test")
+    }
   }
 </script>
