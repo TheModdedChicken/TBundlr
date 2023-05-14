@@ -51,8 +51,8 @@ class TBundlr {
     element.setAttribute('src', `${url.href}`);
 
     if (!isJS && options?.interop) {
-      (element as HTMLIFrameElement).contentWindow?.addEventListener("tbundlr_run:-:execute", (e) => {
-        console.log("testingdf sfgdg")
+      window.addEventListener("message", (e) => {
+        console.log(e.data)
       })
     }
 

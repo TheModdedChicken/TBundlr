@@ -12,6 +12,6 @@
 </html>
 <script>
   function doIt() {
-    window.dispatchEvent(new CustomEvent("tbundlr_run:-:execute"));
+    window.opener.postMessage("tbundlr_run:-:execute");
   }
 </script>
