@@ -10,11 +10,12 @@
     "nodejs-snowflake": "^2.0.1",
     "path-browserify": "^1.0.1",
     "serve": "^14.2.0",
+    "typescript-bundle": "^1.0.18",
     "util": "^0.12.5"
   },
   "scripts": {
     "start": "serve ./src -C",
-    "pack": "webpack"
+    "pack": "tsc-bundle ./src/tbundlr.ts --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr"
   },
   "devDependencies": {
     "ts-loader": "^9.4.2",
@@ -22,7 +23,7 @@
     "webpack": "^5.82.1",
     "webpack-cli": "^5.1.1"
   },
-  "node": {
-    "fs": "empty"
+  "browser": {
+    "path": "path-browserify"
   }
 }

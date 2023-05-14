@@ -13,7 +13,7 @@ module.exports = {
   resolve: {
     extensions: [".ts", ".tsx", ".js"],
     fallback: {
-      "util": require.resolve("util/"),
+      "util": false, // require.resolve("util/")
       "path": false, // require.resolve("path-browserify")
       "fs": false, // Fixes "Module not found: Can't resolve 'fs'"
     }

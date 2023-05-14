@@ -1,6 +1,10 @@
-import { Snowflake } from 'nodejs-snowflake';
+//import { Snowflake } from 'nodejs-snowflake';
 
-export class TBundlr {
+function TBunTest () {
+  console.log("TBunTest")
+}
+
+class TBundlr {
   private _programs: Map<string, ITBProgram> = new Map()
 
   constructor () { (globalThis as any).TBundlr = this; }
@@ -10,14 +14,14 @@ export class TBundlr {
   async readConfig (url: URL) {
     const res = await fetch(url);
     const contentType = res.headers.get("content-type");
-    if (contentType !== "application/json") throw new Error(
+    if (!contentType?.includes("application/json")) throw new Error(
       `[tbundlr:-:readConfig::content-type-mismatch] Tried reading TB config expecting 'application/json'. Got '${contentType}' instead`
     );
 
     const config: ITBConfig = await res.json();
-    if (!config.$tbundlr_version) throw new Error(
-      `[tbundlr:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr' not set. Config read aborted`
-    );
+    /*if (!config.$tbundlr_version) throw new Error(
+      `[tbundlr:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr_version' not set. Config read aborted`
+    );*/
 
     return config;
   }
@@ -25,7 +29,8 @@ export class TBundlr {
   async runProgram(url: URL, options?: { parent?: HTMLElement }) {
     const config: ITBConfig = await this.readConfig(url);
 
-    this.execute(url, config, options?.parent);
+    const fileURL = new URL(config.main, url);
+    this.execute(fileURL, config, options?.parent);
     window.dispatchEvent(new CustomEvent(
       'tbundlr:-:runProgram', { detail: config }
     ));
@@ -45,7 +50,7 @@ export class TBundlr {
     if (parent) element = parent.appendChild(element);
     else element = document.appendChild(element);
 
-    const pid = new Snowflake().getUniqueID();
+    const pid = new Date().getTime();
     const meta: ITBProgram = {
       type: isJS ? 'js' : 'html',
       element,
@@ -75,4 +80,9 @@ interface ITBConfig {
 interface ITBProgram extends ITBConfig {
   type: "html" | "js"
   element: HTMLElement
+}
+
+export {
+  TBunTest,
+  TBundlr
 }
