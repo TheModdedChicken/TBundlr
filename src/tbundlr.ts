@@ -54,7 +54,7 @@ class TBundlr {
     else element = document.body.appendChild(element);
 
     if (!isJS && options?.interop) {
-      (element as HTMLIFrameElement).contentWindow?.addEventListener("message", (e) => {
+      window.addEventListener("message", (e) => {
         console.log(e.data)
       });
     }

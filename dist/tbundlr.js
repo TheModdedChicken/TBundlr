@@ -49,7 +49,6 @@ var tbundlr = (() => {
                 });
             }
             execute(url, config, options) {
-                var _a;
                 const isJS = url.href.endsWith('.js');
                 var element = document.createElement(isJS ? 'script' : 'iframe');
                 element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
@@ -59,7 +58,7 @@ var tbundlr = (() => {
                 else
                     element = document.body.appendChild(element);
                 if (!isJS && (options === null || options === void 0 ? void 0 : options.interop)) {
-                    (_a = element.contentWindow) === null || _a === void 0 ? void 0 : _a.addEventListener("message", (e) => {
+                    window.addEventListener("message", (e) => {
                         console.log(e.data);
                     });
                 }
