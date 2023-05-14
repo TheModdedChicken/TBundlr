@@ -50,6 +50,12 @@ class TBundlr {
     element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
     element.setAttribute('src', `${url.href}`);
 
+    if (!isJS && options?.interop) {
+      (element as HTMLIFrameElement).contentWindow?.addEventListener("tbundlr_run:-:execute", (e) => {
+        console.log("testingdf sfgdg")
+      })
+    }
+
     if (options?.parent) element = options?.parent.appendChild(element);
     else element = document.body.appendChild(element);
 
@@ -65,12 +71,6 @@ class TBundlr {
     window.dispatchEvent(new CustomEvent(
       'tbundlr:-:execute', { detail: { pid: `${pid}`, config } }
     ));
-
-    if (!isJS && options?.interop) {
-      (element as HTMLIFrameElement).contentWindow?.addEventListener("tbundlr_run:-:execute", (e) => {
-        console.log("testingdf sfgdg")
-      })
-    }
   }
 }
 
