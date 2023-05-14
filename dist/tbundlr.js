@@ -62,7 +62,7 @@ var tbundlr = (() => {
                 if (parent)
                     element = parent.appendChild(element);
                 else
-                    element = document.appendChild(element);
+                    element = document.body.appendChild(element);
                 const pid = new Date().getTime();
                 const meta = Object.assign({ type: isJS ? 'js' : 'html', element }, config);
                 this._programs.set(`${pid}`, meta);

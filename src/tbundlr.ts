@@ -48,7 +48,7 @@ class TBundlr {
     element.setAttribute('src', `${url.href}`);
 
     if (parent) element = parent.appendChild(element);
-    else element = document.appendChild(element);
+    else element = document.body.appendChild(element);
 
     const pid = new Date().getTime();
     const meta: ITBProgram = {
