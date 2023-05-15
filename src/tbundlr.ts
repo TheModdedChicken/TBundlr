@@ -16,8 +16,14 @@ class TBundlr {
       const cmd = data.cmd;
 
       // TO-DO: Add interop restrictions to only allow valid PIDs to make requests
+      // TO-DO: Improve domain-message security
+      // TO-DO: Allow non-interoperable programs to make low-risk requests (Get pid, close itself, etc.)
 
-      if (cmd in InteropCommands) InteropCommands[cmd](data, this);
+      if (cmd in InteropCommands) {
+        const cmdData = InteropCommands[cmd];
+        if (data.pid && this._programs.get(data.pid)?.interop) InteropCommands[cmd].func(data, this);
+        // else if ()
+      };
     });
   }
 
@@ -73,6 +79,7 @@ class TBundlr {
       interop?: boolean
     },
   ) {
+    // TO-DO: Allow programs to require interop (high-auth) to be enabled before running.
     const isJS = url.href.endsWith('.js');
 
     var element = document.createElement(isJS ? 'script' : 'iframe');
@@ -83,12 +90,13 @@ class TBundlr {
     else element = document.body.appendChild(element);
 
     const pid = new Date().getTime();
-    const meta: ITBProgram = {
+    const meta: ITBProgram = { 
       type: isJS ? 'js' : 'html',
+      interop: options?.interop || false,
       element,
       $tbundlr_version: 1,
       main: url.href,
-      ...options?.config
+      ...options?.config // Create separate config data capture for ITBProgram
     };
 
     // Add program to Map
@@ -109,17 +117,29 @@ function parseTTScript (script: string) {
 }
 
 const InteropCommands: { 
-  [x in keyof any]: (data: ITBInteropData, bundler: TBundlr) => void 
+  [x in keyof any]: {
+    func: (data: ITBInteropData, bundler: TBundlr) => void,
+    auth: "low" | "high"
+  }
 } = {
-  "tbundlr_cmd:-:test": (data, bundler: TBundlr) => {
-    bundler.emitProgramEvent("tbundlr_event:-:test", true, data.pid)
+  "tbundlr_cmd:-:test": {
+    auth: "low",
+    func: (data, bundler: TBundlr) => {
+      bundler.emitProgramEvent("tbundlr_event:-:test", true, data.pid)
+    }
   },
-  "tbundlr_cmd:-:eval": (data: ITBInteropData) => {
-    const body: string = data.body;
-    eval( parseTTScript(body) )
+  "tbundlr_cmd:-:eval": {
+    auth: "high",
+    func: (data: ITBInteropData) => {
+      const body: string = data.body;
+      eval( parseTTScript(body) )
+    }
   },
-  "tbundlr_cmd:-:create_script": () => {
-    console.log("Recieved 'tbundlr_program:-:create_script'")
+  "tbundlr_cmd:-:create_script": {
+    auth: "high",
+    func: () => {
+      console.log("Recieved 'tbundlr_program:-:create_script'")
+    }
   }
 }
 
@@ -138,6 +158,7 @@ interface ITBConfig {
 interface ITBProgram extends ITBConfig {
   type: "html" | "js"
   element: HTMLElement
+  interop: boolean
 }
 
 interface ITBInteropData {

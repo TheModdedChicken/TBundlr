@@ -50,6 +50,9 @@
     "window": {
       "type": "object",
       "properties": {
+        "interop": {
+          "type": "boolean"
+        },
         "width": {
           "type": "number"
         },
