@@ -7,12 +7,19 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "next": "^13.4.2",
+    "nextra": "^2.5.2",
+    "nextra-theme-docs": "^2.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "serve": "^14.2.0",
     "typescript-bundle": "^1.0.18"
   },
   "scripts": {
     "start": "serve ./src -C",
-    "pack": "tsc-bundle ./tsconfig.json --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr"
+    "pack-src": "tsc-bundle ./tsconfig.json --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr",
+    "dev-docs": "npx next",
+    "pack-docs": ""
   },
   "devDependencies": {
     "ts-loader": "^9.4.2",

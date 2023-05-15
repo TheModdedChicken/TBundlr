@@ -2,6 +2,15 @@ class TBundlr {
   private _programs: Map<string, ITBProgram> = new Map()
 
   constructor () { 
+    console.log(
+      "%c[TBundlr] NOTICE: Programs loaded with TBundlr cannot be guaranteed as safe. Please be wary of what you run.",
+      `
+        font-weight: 700;
+        color: black;
+        background: red;
+      `
+    )
+
     window.addEventListener("message", (e) => {
       const data: ITBInteropData = e.data;
       const cmd = data.cmd;
@@ -88,7 +97,7 @@ class TBundlr {
     // Send execute event to new IFrame
     if (!isJS && options?.interop) (element as HTMLIFrameElement).addEventListener(
       "load", 
-      () => this.emitProgramEvent('tbundlr_event:-:execute', { ...meta, element: undefined }, `${pid}`)
+      () => this.emitProgramEvent('tbundlr_event:-:loaded_program', { ...meta, element: undefined }, `${pid}`)
     );
   }
 }
