@@ -1,9 +1,0 @@
-{
-  "$schema": "../../src/program-schema.json",
-  "$tbundlr_version": 1,
-  "name": "TumblOS",
-  "author": "TheModdedChicken",
-  "description": "A simple, console-based fantasy OS for Tumblr.",
-  "id": "tumbl-os",
-  "main": "index.html"
-}
