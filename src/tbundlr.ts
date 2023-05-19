@@ -94,10 +94,19 @@ class TBundlr {
       type: isJS ? 'js' : 'html',
       interop: options?.interop || false,
       element,
-      $tbundlr_version: 1,
       main: url.href,
+      details: {
+        $tbundlr_version: options?.config?.$tbundlr_version,
+        id: options?.config?.id,
+        author: options?.config?.author,
+        description: options?.config?.description
+      },
       ...options?.config // Create separate config data capture for ITBProgram
     };
+
+    if (!options?.interop && options?.config?.window?.interop) throw new Error(
+      `[tbundlr:-:execute::interopRequested] Program with main file '${url.href}' is requesting 'interop' permissions to load.`
+    );
 
     // Add program to Map
     this._programs.set(`${pid}`, meta);
@@ -145,20 +154,32 @@ const InteropCommands: {
 
 interface ITBConfig {
   $tbundlr_version: number
-  id?: string
+  id: string
   author?: string
   description?: string
   main: string // Can either end with .html or .js
   window?: { // Only for webpage embeds (.html)
+    interop?: boolean
     width?: number
     height?: number
   }
 }
 
-interface ITBProgram extends ITBConfig {
+interface ITBProgram {
   type: "html" | "js"
   element: HTMLElement
   interop: boolean
+  main: string
+  details?: {
+    $tbundlr_version: number
+    id: string
+    author?: string
+    description?: string
+    window?: {
+      width?: number
+      height?: number
+    }
+  }
 }
 
 interface ITBInteropData {
