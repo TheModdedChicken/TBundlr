@@ -14,7 +14,7 @@ class TBundlr {
     window.addEventListener("message", (e) => {
       const program = this._programs.get(e.data.pid);
       console.log(e.data)
-      if (!e.data.pid || !program) throw new Error("[tbundlr_err:-:message_eventListener::invalid_pid] A message was received from an unknown program. Aborted message processing");
+      if (!e.data.pid || !program) throw new Error(`[tbundlr_err:-:message_eventListener::invalid_pid] A message was received from an unknown program. Aborted message processing`);
       if (!e.data.token) throw new Error(
         `[tbundlr_err:-:message_eventListener::invalid_token] A message was received from program with ID of '${e.data.pid}', but no token was provided. Aborted message processing`
       );
@@ -107,6 +107,11 @@ class TBundlr {
     config: ITBConfig,
     options?: ITBProgramOptions,
   ) {
+    // Check if interop permissions have been granted, if requesting interop
+    if (!options?.interop && config.window?.interop) throw new Error(
+      `[tbundlr_err:-:execute::interopRequested] Program with main file '${url.href}' is requesting 'interop' permissions to load.`
+    );
+
     const isJS = url.href.endsWith('.js');
 
     // TO-DO: Add support for popup windows
@@ -132,11 +137,6 @@ class TBundlr {
         window: config.window
       },
     };
-
-    // Check if interop permissions have been granted, if requesting interop
-    if (!options?.interop && config.window?.interop) throw new Error(
-      `[tbundlr_err:-:execute::interopRequested] Program with main file '${url.href}' is requesting 'interop' permissions to load.`
-    );
 
     // Add program to Map
     this._programs.set(pid, {
@@ -164,6 +164,7 @@ function parseTTScript (script: string) {
   trustedTypes.createPolicy("ppjs", { createScript: (string: string) => string }).createScript(script) : script
 }
 
+// Add commands for program-program communication
 const InteropCommands: { 
   [x in keyof any]: {
     func: (data: ITBInteropData, bundler: TBundlr) => void,
