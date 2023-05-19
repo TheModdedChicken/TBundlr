@@ -12,47 +12,80 @@ class TBundlr {
     )
 
     window.addEventListener("message", (e) => {
+      const program = this._programs.get(e.data.pid);
+      if (!e.data.pid || !program) throw new Error("[tbundlr_err:-:message_eventListener::invalid_pid] A message was received from an unknown program. Aborted message processing");
+      if (!e.data.token) throw new Error(
+        `[tbundlr_err:-:message_eventListener::invalid_token] A message was received from program with ID of '${e.data.pid}', but no token was provided. Aborted message processing`
+      );
+
       const data: ITBInteropData = e.data;
       const cmd = data.cmd;
 
-      // TO-DO: Add interop restrictions to only allow valid PIDs to make requests
+      if (program.token !== data.token) throw new Error(
+        `[tbundlr_err:-:message_eventListener::invalid_token] A message was received from program with ID of '${e.data.pid}', but the token provided was invalid. Aborted message processing`
+      );
+
+      // TO-DO: Update errors to provide programs with error info
       // TO-DO: Improve domain-message security
-      // TO-DO: Allow non-interoperable programs to make low-risk requests (Get pid, close itself, etc.)
 
       if (cmd in InteropCommands) {
         const cmdData = InteropCommands[cmd];
-        if (data.pid && this._programs.get(data.pid)?.interop) InteropCommands[cmd].func(data, this);
-        // else if ()
+        if (this._programs.get(data.pid)?.meta.interop) InteropCommands[cmd].func(data, this);
+        else if (cmdData.auth === "low") InteropCommands[cmd].func(data, this);
+        else throw new Error(
+          `[tbundlr_err:-:message_eventListener::unauthorized] A message was received from program with ID of '${e.data.pid}', but it does not have sufficient authorization. Aborted message processing`
+        );
       };
     });
   }
 
   test () {console.log('You successfully tested the TBundlr module! Your mother would be proud :D')}
 
-  emitProgramEvent (type: string, body: any, pid?: string) {
-    const program = this._programs.get(pid || "");
-    if (!program) console.warn(`[tbundlr_warn:-:emitProgramEvent::invalid_pid] Couldn't find program with ID of '${pid}'`);
+  postMessage (event: string, body: any, auth: { pid: string, token: string }) {
+    const program = this._programs.get(auth.pid);
+    if (!program) throw new Error(`[tbundlr_err:-:emitProgramEvent::invalid_pid] Couldn't find program with ID of '${auth.pid}'`);
 
     const message = {
-      pid,
-      cmd: type,
+      pid: auth.pid,
+      cmd: event,
       body
     };
 
-    if (!program || program.type === "js") window.postMessage(message, "*");
-    else (program.element as HTMLIFrameElement).contentWindow?.postMessage(message, "*");
+    switch (program.meta.type) {
+      case "js": {
+        program.element.dispatchEvent(
+          new CustomEvent(event, { detail: message })
+        );
+        break;
+      }
+
+      case "html": {
+        (program.element as HTMLIFrameElement).contentWindow?.postMessage(
+          {
+            token: auth.token,
+            ...message
+          }, 
+          new URL(program.meta.main).host
+        );
+        break;
+      }
+    }
+  }
+
+  broadcastMessage () {
+    
   }
 
   async readConfig (url: URL) {
     const res = await fetch(url);
     const contentType = res.headers.get("content-type");
     if (!contentType?.includes("application/json")) throw new Error(
-      `[tbundlr:-:readConfig::content-type-mismatch] Tried reading TB config expecting 'application/json'. Got '${contentType}' instead`
+      `[tbundlr_err:-:readConfig::content-type-mismatch] Tried reading TB config expecting 'application/json'. Got '${contentType}' instead`
     );
 
     const config: ITBConfig = await res.json();
     if (!config.$tbundlr_version) throw new Error(
-      `[tbundlr:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr_version' not set. Config read aborted`
+      `[tbundlr_err:-:readConfig::invalid-config::$tbundlr_version] Property '$tbundlr_version' not set. Config read aborted`
     );
 
     return config;
@@ -60,28 +93,22 @@ class TBundlr {
 
   async runProgram(
     url: URL, 
-    options?: { 
-      parent?: HTMLElement, 
-      interop?: boolean 
-    }
+    options?: ITBProgramOptions
   ) {
     const config: ITBConfig = await this.readConfig(url);
 
     const fileURL = new URL(config.main, url);
-    this.execute(fileURL, { config, ...options });
+    this.execute(fileURL, config, options);
   }
 
   execute (
     url: URL,
-    options?: {
-      config?: ITBConfig,
-      parent?: HTMLElement,
-      interop?: boolean
-    },
+    config: ITBConfig,
+    options?: ITBProgramOptions,
   ) {
-    // TO-DO: Allow programs to require interop (high-auth) to be enabled before running.
     const isJS = url.href.endsWith('.js');
 
+    // TO-DO: Add support for popup windows
     var element = document.createElement(isJS ? 'script' : 'iframe');
     element.setAttribute('type', isJS ? 'text/javascript' : 'text/html');
     element.setAttribute('src', `${url.href}`);
@@ -89,32 +116,43 @@ class TBundlr {
     if (options?.parent) element = options?.parent.appendChild(element);
     else element = document.body.appendChild(element);
 
-    const pid = new Date().getTime();
-    const meta: ITBProgram = { 
+    const pid = crypto.randomUUID(); // Program Identifier
+    const token = crypto.randomUUID(); // Program Authentication Token (For security)
+
+    const meta: ITBProgramMeta = { 
       type: isJS ? 'js' : 'html',
       interop: options?.interop || false,
-      element,
       main: url.href,
       details: {
-        $tbundlr_version: options?.config?.$tbundlr_version,
-        id: options?.config?.id,
-        author: options?.config?.author,
-        description: options?.config?.description
+        $tbundlr_version: config.$tbundlr_version,
+        id: config.id,
+        author: config.author,
+        description: config.description,
+        window: config.window
       },
-      ...options?.config // Create separate config data capture for ITBProgram
     };
 
-    if (!options?.interop && options?.config?.window?.interop) throw new Error(
-      `[tbundlr:-:execute::interopRequested] Program with main file '${url.href}' is requesting 'interop' permissions to load.`
+    // Check if interop permissions have been granted, if requesting interop
+    if (!options?.interop && config.window?.interop) throw new Error(
+      `[tbundlr_err:-:execute::interopRequested] Program with main file '${url.href}' is requesting 'interop' permissions to load.`
     );
 
     // Add program to Map
-    this._programs.set(`${pid}`, meta);
+    this._programs.set(pid, {
+      token,
+      element,
+      meta
+    });
 
     // Send execute event to new IFrame
-    if (!isJS && options?.interop) (element as HTMLIFrameElement).addEventListener(
+    (element as HTMLElement).addEventListener(
       "load", 
-      () => this.emitProgramEvent('tbundlr_event:-:loaded_program', { ...meta, element: undefined }, `${pid}`)
+      () => this.postMessage(
+        'tbundlr_event:-:loaded_program', 
+        meta, 
+        { pid, token }
+      ),
+      { once: true }
     );
   }
 }
@@ -134,7 +172,7 @@ const InteropCommands: {
   "tbundlr_cmd:-:test": {
     auth: "low",
     func: (data, bundler: TBundlr) => {
-      bundler.emitProgramEvent("tbundlr_event:-:test", true, data.pid)
+      bundler.postMessage("tbundlr_event:-:test", true, { pid: data.pid, token: data.token })
     }
   },
   "tbundlr_cmd:-:eval": {
@@ -165,26 +203,38 @@ interface ITBConfig {
   }
 }
 
-interface ITBProgram {
+interface ITBProgramMeta {
   type: "html" | "js"
-  element: HTMLElement
   interop: boolean
   main: string
-  details?: {
+  details: {
     $tbundlr_version: number
     id: string
     author?: string
     description?: string
     window?: {
+      interop?: boolean
       width?: number
       height?: number
     }
   }
 }
 
+interface ITBProgram {
+  element: HTMLElement
+  token: string
+  meta: ITBProgramMeta
+}
+
+interface ITBProgramOptions {
+  parent?: HTMLElement
+  interop?: boolean
+}
+
 interface ITBInteropData {
-  pid?: string
-  cmd: string,
+  pid: string
+  token: string
+  cmd: string
   body?: any
 }
 
