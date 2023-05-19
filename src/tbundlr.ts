@@ -13,6 +13,7 @@ class TBundlr {
 
     window.addEventListener("message", (e) => {
       const program = this._programs.get(e.data.pid);
+      console.log(e.data)
       if (!e.data.pid || !program) throw new Error("[tbundlr_err:-:message_eventListener::invalid_pid] A message was received from an unknown program. Aborted message processing");
       if (!e.data.token) throw new Error(
         `[tbundlr_err:-:message_eventListener::invalid_token] A message was received from program with ID of '${e.data.pid}', but no token was provided. Aborted message processing`
@@ -65,7 +66,7 @@ class TBundlr {
             token: auth.token,
             ...message
           }, 
-          new URL(program.meta.main).host
+          new URL(program.meta.main).origin
         );
         break;
       }
