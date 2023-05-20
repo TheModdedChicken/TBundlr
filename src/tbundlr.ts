@@ -13,7 +13,6 @@ class TBundlr {
 
     window.addEventListener("message", (e) => {
       const program = this._programs.get(e.data.pid);
-      console.log(e.data)
       if (!e.data.pid || !program) throw new Error(`[tbundlr_err:-:message_eventListener::invalid_pid] A message was received from an unknown program. Aborted message processing`);
       if (!e.data.token) throw new Error(
         `[tbundlr_err:-:message_eventListener::invalid_token] A message was received from program with ID of '${e.data.pid}', but no token was provided. Aborted message processing`
@@ -31,6 +30,7 @@ class TBundlr {
 
       if (cmd in InteropCommands) {
         const cmdData = InteropCommands[cmd];
+
         if (this._programs.get(data.pid)?.meta.interop) InteropCommands[cmd].func(data, this);
         else if (cmdData.auth === "low") InteropCommands[cmd].func(data, this);
         else throw new Error(
@@ -161,10 +161,10 @@ class TBundlr {
 // Parse Scripts for Eval Function (Policy bypass)
 function parseTTScript (script: string) {
   return typeof trustedTypes !== 'undefined' ? 
-  trustedTypes.createPolicy("ppjs", { createScript: (string: string) => string }).createScript(script) : script
+  trustedTypes.createPolicy("tbundlr", { createScript: (string: string) => string }).createScript(script) : script
 }
 
-// Add commands for program-program communication
+// TO-DO: Add commands for program-program communication
 const InteropCommands: { 
   [x in keyof any]: {
     func: (data: ITBInteropData, bundler: TBundlr) => void,
@@ -222,15 +222,15 @@ interface ITBProgramMeta {
   }
 }
 
+interface ITBProgramOptions {
+  parent?: HTMLElement
+  interop?: boolean
+}
+
 interface ITBProgram {
   element: HTMLElement
   token: string
   meta: ITBProgramMeta
-}
-
-interface ITBProgramOptions {
-  parent?: HTMLElement
-  interop?: boolean
 }
 
 interface ITBInteropData {
