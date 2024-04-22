@@ -4,7 +4,6 @@
   "description": "Documentation for TBundlr",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "next start",
     "dev": "next dev",
     "build": "next build"
