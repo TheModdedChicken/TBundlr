@@ -5,7 +5,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "serve ./src -C",
     "build": "tsc-bundle ./tsconfig.json --outFile ./../../apps/docs/dist/bundler/tbundlr.js --target ES6 --exportAs tbundlr"
   },
   "devDependencies": {
