@@ -12,8 +12,6 @@
   },
   "devDependencies": {
     "ts-loader": "^9.4.2",
-    "typescript": "^5.0.4",
-    "serve": "^14.2.0",
-    "typescript-bundle": "^1.0.18"
+    "typescript": "^5.0.4"
   }
 }
