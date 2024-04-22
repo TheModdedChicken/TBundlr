@@ -1,6 +1,6 @@
 {
   "name": "tbundlr",
-  "private": true,
+  "repository": "https://github.com/TheModdedChicken/TBundlr.git",
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",

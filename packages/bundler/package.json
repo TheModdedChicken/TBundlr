@@ -1,9 +1,7 @@
 {
-  "name": "tbundlr",
+  "name": "bundler",
   "version": "1.0.0",
   "main": "./dist/tbundlr.js",
-  "repository": "https://github.com/TheModdedChicken/TBundlr.git",
-  "author": "TheModdedChicken",
   "license": "MIT",
   "private": true,
   "scripts": {
