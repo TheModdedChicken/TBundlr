@@ -9,7 +9,9 @@
   },
   "devDependencies": {
     "prettier": "^3.2.5",
-    "turbo": "latest"
+    "turbo": "latest",
+    "serve": "^14.2.0",
+    "typescript-bundle": "^1.0.18"
   },
   "engines": {
     "node": ">=18"
