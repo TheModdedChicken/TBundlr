@@ -1,5 +1,4 @@
 {
-    "outputDirectory": "app/docs/dist",
     "rewrites": [
         { "source": "/apps/bundler/dist", "destination": "/bundler" }
     ]
