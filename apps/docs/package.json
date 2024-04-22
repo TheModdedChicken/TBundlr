@@ -1,0 +1,25 @@
+{
+  "name": "tbundlr-docs",
+  "version": "1.0.0",
+  "description": "Documentation for TBundlr",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "next start",
+    "dev": "next dev",
+    "build": "next build"
+  },
+  "author": "TheModdedChicken",
+  "license": "MIT",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
+    "@fortawesome/free-brands-svg-icons": "^6.4.0",
+    "@fortawesome/free-solid-svg-icons": "^6.4.0",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "next": "^13.4.2",
+    "nextra": "^2.5.2",
+    "nextra-theme-docs": "^2.5.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

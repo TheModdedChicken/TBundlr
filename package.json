@@ -1,23 +1,24 @@
 {
   "name": "tbundlr",
-  "version": "1.0.0",
-  "main": "./dist/tbundlr.js",
-  "repository": "https://github.com/TheModdedChicken/TBundlr.git",
-  "author": "TheModdedChicken",
-  "license": "MIT",
   "private": true,
-  "dependencies": {
-    "serve": "^14.2.0",
-    "typescript-bundle": "^1.0.18"
-  },
   "scripts": {
-    "start": "serve ./src -C",
-    "pack-src": "tsc-bundle ./tsconfig.json --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr",
-    "dev-docs": "npx next",
-    "pack-docs": ""
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "ts-loader": "^9.4.2",
-    "typescript": "^5.0.4"
-  }
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "prettier": "^3.2.5",
+    "turbo": "latest"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "bun@1.1.4",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

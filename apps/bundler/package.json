@@ -1,0 +1,21 @@
+{
+  "name": "tbundlr",
+  "version": "1.0.0",
+  "main": "./dist/tbundlr.js",
+  "repository": "https://github.com/TheModdedChicken/TBundlr.git",
+  "author": "TheModdedChicken",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "serve": "^14.2.0",
+    "typescript-bundle": "^1.0.18"
+  },
+  "scripts": {
+    "start": "serve ./src -C",
+    "build": "tsc-bundle ./tsconfig.json --outFile ./dist/tbundlr.js --target ES6 --exportAs tbundlr"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4"
+  }
+}

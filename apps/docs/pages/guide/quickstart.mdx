@@ -1,0 +1,119 @@
+import { Callout, Steps } from 'nextra-theme-docs'
+
+# Quick Start
+This quick start guide will walk you through the basics of how to start creating programs for TBundlr.
+
+When following this guide, it is assumed you have a basic understanding of [Javascript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML), and [Git](https://git-scm.com/).
+
+## Types of Programs
+There are two types of programs you can load using TBundlr:
+
+- Script: A simple Javascript file that gets loaded into the main window.
+- Embed: A webpage that gets embedded within the main page and communicates with the main window.
+
+Both of these can be loaded as TBundlr specific (using a `tbundlr-config.json` file), or as a standard file/webpage.
+<Callout type="info">
+  To learn more about the configuration file, [go here](../reference/config).
+</Callout>
+
+## Creating an Embed
+<Steps>
+
+### Find or Create a Project
+To start, open the main file of the webpage you want to embed.
+
+For this example a blank HTML page will be used.
+```html showLineNumbers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TBundlr Embed</title>
+</head>
+<body></body>
+</html>
+<script></script>
+```
+
+### Add Event Listener
+Next, we'll:
+
+1. Add an event listener for `message` to the window.
+2. Create a JSON object for storing event functions.
+3. Create an event function for `tbundlr_event:-:loaded_program`.
+
+This setup is to keep the events organized, however, you may call the events a different way if you prefer.
+
+```html {12-25} showLineNumbers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TBundlr Embed</title>
+</head>
+<body></body>
+</html>
+<script>
+  window.addEventListener("message", (e) => {
+    if (InteropEvents[e.data.cmd]) InteropEvents[e.data.cmd](e.data);
+  })
+
+  const InteropEvents = {
+    /* Called when your program finishes loading. */
+    "tbundlr_event:-:loaded_program": (data) => {
+      console.log("[TBundlr Embed PID] " + data.pid) 
+      /*               ^^^
+       * PIDs (Program Identifiers) are used to identify and authenticate
+       * programs during interop communication. Store this somewhere for later!
+      */
+    }
+  }
+</script>
+```
+<Callout type="info">
+  To learn more about events, [go here](../reference/events).
+</Callout>
+
+### Save and Upload
+Save your website and ensure it's available online.
+
+### Modify Tumblr Page
+Open the HTML editor for your Tumblr page and add a script tag pointing to `https://tbundlr.rayk.cc/dist/tbundlr.js`
+
+```html {5} showLineNumbers
+<!DOCTYPE html>
+<html>
+  ...
+</html>
+<script src="https://tbundlr.rayk.cc/dist/tbundlr.js"></script>
+```
+
+Then, add another script tag with the following code, replacing `<url>` with the url of your webpage:
+```html {6-16} showLineNumbers
+<!DOCTYPE html>
+<html>
+  ...
+</html>
+<script src="https://tbundlr.rayk.cc/dist/tbundlr.js"></script>
+<script>
+  const tb = new tbundlr.TBundlr();
+
+  tb.execute(
+    new URL("<url>"), // Replace <url> with the url of your webpage.
+    options: { 
+      parent: document.body // Set this to the element you want your embed to be in.
+      interop: true // Allows your embed to communicate with the main window.
+    }
+  );
+</script>
+```
+
+### Save and Profit!
+You've now implemented TBundlr and should see your embed's PID show up in the console when you load your page!
+
+If you want to give your program more functionality and metadata, [go here](./metadata).
+</Steps>
